@@ -1,4 +1,6 @@
 import json
+import re
+from datetime import date
 
 from bs4 import BeautifulSoup as BS
 import requests
@@ -12,27 +14,29 @@ HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Safari/605.1.15"
 }
 
+def get_filename(url: str, write_file=False) -> str:
+    _, pathname = re.split(r'/shop/', url)
+    deleted = '_deleted' if not write_file else ''
+    filename = f"{pathname}-{date.today()}{deleted}.txt"
+    return filename
 
-def get_html(url):
-    r = requests.get(url, headers=HEADERS)
-    return r
-
-def get_content(html,image = False):
+def get_content(url, width=50, image=False, write_file=False):
+    html = requests.get(url, headers=HEADERS).text
     soup = BS(html, "lxml")
     catalog_items = (soup.find("div", {"id": "catalog-results"})).findAll("script")
+    filename = get_filename(url, write_file)
+
     for item in catalog_items:
         i_json = json.loads(item.text)
         description = i_json["description"]
         name = i_json["name"]
         article = f'article: {i_json["sku"]}'
         url = f'url: {i_json["url"]}'
-        price = f'{i_json["offers"]["price"]} {i_json["offers"]["priceCurrency"]}'
-        list_for_write = [description, name, article, url, price]
+        price = f'price: {i_json["offers"]["price"]} {i_json["offers"]["priceCurrency"]}'
+        list_for_write = [description, name, article, price, url]
         list_for_write.append(f'image: {i_json["image"]}') if image else None
 
-        with open('example.txt', 'a') as f:
-            [f.write(fill(f"{i}", width=30) + '\n') for i in list_for_write]
+        with open(filename, 'a') as f:
+            [f.write(fill(f"{i}", width=width) + '\n') for i in list_for_write]
             f.write('\n')
-
-html = get_html(URL)
-get_content(html.text, image=True)
+    return filename
