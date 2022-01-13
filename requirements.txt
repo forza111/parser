@@ -5,9 +5,11 @@ beautifulsoup4==4.10.0
 certifi==2021.10.8
 charset-normalizer==2.0.10
 click==8.0.3
+colorama==0.4.4
 fastapi==0.71.0
 h11==0.12.0
 idna==3.3
+importlib-metadata==4.10.0
 lxml==4.7.1
 pydantic==1.9.0
 PyHyphen==4.0.3
@@ -18,3 +20,4 @@ starlette==0.17.1
 typing_extensions==4.0.1
 urllib3==1.26.8
 uvicorn==0.16.0
+zipp==3.7.0
