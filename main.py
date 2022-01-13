@@ -1,10 +1,10 @@
 import os
+from typing import  Optional
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from fastapi.responses import FileResponse
 from starlette.background import BackgroundTasks
 from pydantic import HttpUrl
-import uvicorn
 
 from scraper import get_content
 
@@ -15,11 +15,11 @@ def remove_file(path: str) -> None:
     os.unlink(path)
 
 @app.get("/")
-def main(url: HttpUrl, width: int, image_url: bool, background_tasks: BackgroundTasks):
+def main(url: HttpUrl,
+         background_tasks: BackgroundTasks,
+         width: Optional[int] = Query(60, ge=10, le=100),
+         image_url: Optional[bool] = Query(False)
+         ):
     path = get_content(url, width, image_url)
     background_tasks.add_task(remove_file, path)
     return FileResponse(path)
-
-
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)

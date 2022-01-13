@@ -1,6 +1,7 @@
 import json
 import re
 from datetime import date
+from pathlib import Path
 
 from bs4 import BeautifulSoup as BS
 import requests
@@ -18,8 +19,9 @@ def get_filename(url: str, save_file=False) -> str:
     _, pathname = re.split(r'/shop/', url)
     deleted = '_deleted' if not save_file else ''
     filename = f"{pathname}-{date.today()}{deleted}.txt"
-    create_empty_file(filename) if save_file else None
-    return filename
+    path = Path.cwd() / 'content' / filename
+    create_empty_file(path) if save_file else None
+    return path
 
 def create_empty_file(filename):
     with open(filename, 'w'):
