@@ -6,7 +6,7 @@ import argparse
 
 def createParser():
     parser = argparse.ArgumentParser(
-        prog="console_scraper",
+        # prog="console_scraper",
         description="The command allows you to receive data from the online store from the received "
                     "URL and display the result.",
         add_help=False,
